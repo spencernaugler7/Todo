@@ -16,8 +16,20 @@
             <MudList>
                 @foreach (var todo in todos.Where(todo => todo.IsDone == false).Where(todo => DATE_FILTERED ? IsWithinFilter(todo) : true))
                 {
-                    <TodoComponent Todo="todo" DeleteCallback="HandleDelete"></TodoComponent>
+                    <MudListItem>
+                        <MudStack Row="true">
+                            <MudTextField @bind-Value="todo.Description"
+                                          Variant="Variant.Text"
+                                          Margin="Margin.Dense"></MudTextField>
+                            <MudElement>@todo.DueDate</MudElement>
+                            <MudCheckBox @bind-Checked="todo.IsDone"></MudCheckBox>
+                            <MudIconButton Icon="@Icons.Material.Filled.Delete"
+                                           aria-label="delete"
+                                           @onclick="(_) => TodoDeleted(todo)"/>
+                        </MudStack>
+                    </MudListItem>
                 }
+                
             </MudList>
         </MudPaper>
     }
@@ -26,7 +38,18 @@
         <MudExpansionPanel Text="Done">
             @foreach(var todo in todos.Where(todo => todo.IsDone))
             {
-                <TodoComponent Todo="todo" DeleteCallback="HandleDelete"></TodoComponent>
+                    <MudListItem>
+                        <MudStack Row="true">
+                            <MudTextField @bind-Value="todo.Description"
+                                          Variant="Variant.Text"
+                                          Margin="Margin.Dense"></MudTextField>
+                            <MudElement>@todo.DueDate</MudElement>
+                            <MudCheckBox @bind-Checked="todo.IsDone"></MudCheckBox>
+                            <MudIconButton Icon="@Icons.Material.Filled.Delete"
+                                           aria-label="delete"
+                                           @onclick="(_) => TodoDeleted(todo)"/>
+                        </MudStack>
+                    </MudListItem>
             }
         </MudExpansionPanel>
     }
@@ -84,11 +107,6 @@
          * we extract the dates the second comparison so the end of the filter is inclusive
          */
         return todo.DueDate > filterRange.Start && todo.DueDate.Value.Date <= filterRange.End.Value.Date;
-    }
-
-    private void HandleDelete(TodoItem todo)
-    {
-        todos.Remove(todo);
     }
 
 }
