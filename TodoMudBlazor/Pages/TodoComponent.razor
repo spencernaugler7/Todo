@@ -1,0 +1,20 @@
+@using BlazorTodo.Models
+
+<MudListItem>
+    <MudStack Row="true">
+        <MudTextField @bind-Value="Todo.Description"
+                      Variant="Variant.Text"
+                      Margin="Margin.Dense"></MudTextField>
+        <MudElement>@Todo.DueDate</MudElement>
+        <MudCheckBox @bind-Checked="Todo.IsDone"></MudCheckBox>
+        <MudIconButton Icon="@Icons.Material.Filled.Delete"
+                       aria-label="delete"
+                       @onclick="(_) => DeleteCallback.InvokeAsync(Todo)"/>
+    </MudStack>
+</MudListItem>
+
+
+@code {
+    [Parameter] public TodoItem Todo { get; set; }
+    [Parameter] public EventCallback<TodoItem> DeleteCallback { get; set; }
+}
