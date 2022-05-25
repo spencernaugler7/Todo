@@ -16,7 +16,9 @@
                                           Margin="Margin.Dense"></MudTextField>
                             <MudElement>@todo.DueDate</MudElement>
                             <MudCheckBox @bind-Checked="todo.IsDone"></MudCheckBox>
-                            <MudIconButton Icon="@Icons.Material.Filled.Delete" aria-label="delete" /> 
+                            <MudIconButton Icon="@Icons.Material.Filled.Delete" 
+                                           aria-label="delete" 
+                                           @onclick="(_) => TodoDeleted(todo)"/> 
                         </MudStack>
                     </MudListItem>
                 }
