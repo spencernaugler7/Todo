@@ -2,12 +2,19 @@
 @using BlazorTodo.Models
 
 <h1 style="text-align: center">Todo's left: (@todos.Count(todo => !todo.IsDone))</h1>
-<MudStack Justify="Justify.SpaceEvenly" Spacing="_stackSpaceing">
+<MudStack Justify="Justify.SpaceEvenly" Spacing="STACK_SPACING">
     @if (todos.Count(todo => todo.IsDone == false) > 0)
     {
         <MudPaper>
+            <MudSwitch @bind-Checked="DATE_FILTERED" Label="Filter by date" Color="Color.Info"/>
+            @if (DATE_FILTERED)
+            {
+                <MudPaper>
+                    <MudDateRangePicker Label="Find todos in range" @bind-DateRange="filterRange" />
+                </MudPaper>
+            }
             <MudList>
-                @foreach (var todo in todos)
+                @foreach (var todo in todos.Where(todo => todo.IsDone == false) .Where(todo => !DATE_FILTERED || (todo.DueDate > filterRange.Start && todo.DueDate < filterRange.End)))
                 {
                     <MudListItem>
                         <MudStack Row="true">
@@ -16,14 +23,34 @@
                                           Margin="Margin.Dense"></MudTextField>
                             <MudElement>@todo.DueDate</MudElement>
                             <MudCheckBox @bind-Checked="todo.IsDone"></MudCheckBox>
-                            <MudIconButton Icon="@Icons.Material.Filled.Delete" 
-                                           aria-label="delete" 
-                                           @onclick="(_) => TodoDeleted(todo)"/> 
+                            <MudIconButton Icon="@Icons.Material.Filled.Delete"
+                                           aria-label="delete"
+                                           @onclick="(_) => TodoDeleted(todo)"/>
                         </MudStack>
                     </MudListItem>
                 }
             </MudList>
         </MudPaper>
+    }
+    @if (todos.Count(todo => todo.IsDone) > 0)
+    {
+        <MudExpansionPanel Text="Done">
+            @foreach(var todo in todos.Where(todo => todo.IsDone))
+            {
+                 <MudListItem>
+                     <MudStack Row="true">
+                         <MudTextField @bind-Value="todo.Description"
+                                       Variant="Variant.Text"
+                                       Margin="Margin.Dense"></MudTextField>
+                         <MudElement>@todo.DueDate</MudElement>
+                         <MudCheckBox @bind-Checked="todo.IsDone"></MudCheckBox>
+                         <MudIconButton Icon="@Icons.Material.Filled.Delete" 
+                                        aria-label="delete" 
+                                        @onclick="(_) => TodoDeleted(todo)"/> 
+                     </MudStack>
+                 </MudListItem>       
+            }
+        </MudExpansionPanel>
     }
     <MudPaper>
         <MudStack Row="true">
@@ -39,12 +66,14 @@
 </MudStack>
 
 @code {
-    private int _stackSpaceing = 3;
+    private int STACK_SPACING = 3;
+    private bool DATE_FILTERED = false;
     
     private List<TodoItem> todos = new();
     private string? newTodoDescription;
     private DateTime? newTodoDate;
     private TimeSpan? newTodoTime;
+    private DateRange? filterRange;
 
 
     private void NewTodo()
